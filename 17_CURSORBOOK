@@ -1,0 +1,65 @@
+CREATE DATABASE PRAC17;
+USE PRAC17;
+
+CREATE TABLE Books (
+    ISBN VARCHAR(20) PRIMARY KEY,
+    Title VARCHAR(100) NOT NULL,
+    Price DECIMAL(10, 2) NOT NULL,
+    Edition INT NOT NULL
+);
+
+INSERT INTO Books (ISBN, Title, Price, Edition) VALUES
+('978-0061120084', 'To Kill a Mockingbird', 250.00, 1),
+('978-0451524935', '1984', 180.00, 1),
+('978-0743273565', 'The Great Gatsby', 200.00, 1),
+('978-1612930845', 'Pride and Prejudice', 150.00, 1),
+('978-0316769488', 'The Catcher in the Rye', 220.00, 1);
+
+
+DELIMITER //
+
+CREATE PROCEDURE ReducePriceOfFirstEditionBooks()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE isbn_var VARCHAR(20);
+    DECLARE title_var VARCHAR(100);
+    DECLARE price_var DECIMAL(10, 2);
+    
+    DECLARE cur CURSOR FOR
+        SELECT ISBN, Title, Price
+        FROM Books
+        WHERE Edition = 1;
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    CREATE TABLE IF NOT EXISTS ReducedPriceBooks (
+        ISBN VARCHAR(20),
+        Title VARCHAR(100),
+        ReducedPrice DECIMAL(10, 2)
+    );
+    
+    OPEN cur;
+    
+    read_loop: LOOP
+        FETCH cur INTO isbn_var, title_var, price_var;
+        
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+     
+        SET price_var = price_var - 50;
+        
+        INSERT INTO ReducedPriceBooks (ISBN, Title, ReducedPrice)
+        VALUES (isbn_var, title_var, price_var);
+    END LOOP;
+    
+    CLOSE cur;
+    
+END//
+
+DELIMITER ;
+
+CALL ReducePriceOfFirstEditionBooks();
+
+SELECT * FROM ReducedPriceBooks;
+

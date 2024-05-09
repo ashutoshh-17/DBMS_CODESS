@@ -1,0 +1,50 @@
+CREATE DATABASE PRACTICAL6;
+USE PRACTICAL6;
+
+CREATE TABLE student_details (
+    roll_no INT PRIMARY KEY,
+    name VARCHAR(50),
+    subject1 INT,
+    subject2 INT,
+    subject3 INT,
+    subject4 INT,
+    subject5 INT
+);
+
+
+INSERT INTO student_details (roll_no, name, subject1, subject2, subject3, subject4, subject5)
+VALUES
+    (1, 'John', 80, 75, 85, 90, 88),
+    (2, 'Alice', 70, 65, 75, 80, 78),
+    (3, 'Bob', 85, 90, 88, 92, 87);
+
+
+DELIMITER //
+CREATE FUNCTION calculate_grade(student_roll INT) RETURNS VARCHAR(10)
+DETERMINISTIC
+READS SQL DATA
+BEGIN
+    DECLARE avg_marks FLOAT;
+    DECLARE grade VARCHAR(10);
+    
+    SELECT AVG((subject1 + subject2 + subject3 + subject4 + subject5) / 5) INTO avg_marks
+    FROM student_details
+    WHERE roll_no = student_roll;
+    
+    IF avg_marks >= 90 THEN
+        SET grade = 'A';
+    ELSEIF avg_marks >= 80 THEN
+        SET grade = 'B';
+    ELSEIF avg_marks >= 70 THEN
+        SET grade = 'C';
+    ELSEIF avg_marks >= 60 THEN
+        SET grade = 'D';
+    ELSE
+        SET grade = 'F';
+    END IF;
+    
+    RETURN grade;
+END //
+DELIMITER ;
+
+SELECT calculate_grade(1);

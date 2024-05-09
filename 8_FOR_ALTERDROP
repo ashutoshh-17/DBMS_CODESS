@@ -1,0 +1,34 @@
+CREATE DATABASE PRACTICAL8;
+USE PRACTICAL8;
+
+
+CREATE TABLE Department (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(255)
+);
+
+
+CREATE TABLE Employee (
+    employee_id INT PRIMARY KEY,
+    employee_name VARCHAR(255),
+    department_id INT,
+    FOREIGN KEY (department_id) REFERENCES Department(department_id)
+);
+
+
+INSERT INTO Department (department_id, department_name)
+VALUES (1, 'Engineering'),
+       (2, 'Marketing');
+
+
+INSERT INTO Employee (employee_id, employee_name, department_id)
+VALUES (1, 'John Doe', 1),
+       (2, 'Jane Smith', 2);
+
+
+ALTER TABLE Employee
+ADD COLUMN salary DECIMAL(10,2);
+ALTER TABLE Employee
+MODIFY COLUMN employee_name VARCHAR(100);
+
+DROP TABLE Employee;
